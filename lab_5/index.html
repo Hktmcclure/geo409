@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>Module 05 Template</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        header {
+            padding: 6px 10%;
+        }
+        h1 {
+            display: inline-block;
+            margin-right: 20px;
+            color: #001323;
+        }
+        h2 {
+            display: inline-block;
+            color: #001323;
+        }
+        #map {
+            width: 80%;
+            height: 540px;
+            margin: 10px auto;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        p {
+            font-size: 1em;
+            color: #001323;
+        }
+        /* Additional style rules go here! */
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>AdvGIS 2.3.2015</h1>
+        <h2>Task Dolphin</h2>
+    </header>
+
+    <div id='map'></div>
+
+    <footer>
+        <p>Map authored by The Wonderful Hannah Mcclure</p>
+        <p>All you need know is that I promised I wouldn't wait until 1 am to start this again and yet here I am.</p>
+        <p>Truly the sentence above covered all you need to know. If you're looking for enlightenment or entertainment I doubt you will find it here. There are no sardonic remarks to be made light of, no rapier wit to be sharpened against dull minds at this atrocious hour. There is only me. And I am tired.
+        </p>
+    </footer>
+
+    <script>
+        var map;
+        var targetDiv = 'map';
+
+        var options = {
+            center: [38.0489,-84.5025],
+            zoom: 13
+        }
+        map = L.map(targetDiv, options);
+        var tiles = L.tileLayer('http://a{s}.acetate.geoiq.com/tiles/acetate-hillshading/{z}/{x}/{y}.png', {
+            attribution: '&copy;2012 Esri & Stamen, Data from OSM and Natural Earth',
+            subdomains: '0123',
+            minZoom: 2,
+            maxZoom: 18
+        });
+        map.addLayer(tiles);
+        
+        // continue JavaScript coding here!
+        var cities = ["Frankfort", "Louisville", "Lexington"];
+        var citycoords = [
+        [38.1970, -84.8630],
+        [38.2500, -85.7667],
+        [38.0297, -84.4947],
+        ];
+        var cityPops = [27453, 253128, 308428];
+        var cityCapital = [true, false, false];
+        for (var i=0; i < cities.length; i++)
+    </script>
+    
+</body>
+
+</html>
