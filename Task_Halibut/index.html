@@ -62,14 +62,14 @@
 
 <body>
     <header>
-        <h1>Map Title</h1>
-        <h2>Map Subtitle</h2>
+        <h1>Task Halibut</h1>
+        <h2>Oh the places you'll go....and never go back to</h2>
     </header>
 
     <div id='map'></div>
 
     <footer>
-        <p>Map authored by YOUR NAME</p>
+        <p>Map authored by Hannah McClure</p>
         <p>Additional information about the data and map goes here.</p>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis urna magna, maximus nec laoreet sit amet, dictum ultricies nibh. Ut id auctor lacus. Nam a dolor et justo luctus luctus. Duis a elit eget risus dictum vehicula id eu elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed sed enim nisl. Vestibulum commodo imperdiet lacus, sed facilisis erat placerat sit amet. Nulla consequat malesuada neque eget aliquet. Integer non convallis nisl, gravida ultrices ex. Fusce nec vestibulum elit. Sed elementum lectus ipsum, vulputate elementum ex laoreet a. Aenean eu ex varius, varius felis vitae, efficitur nulla. Quisque pretium laoreet ante, in sodales dui vehicula at. Mauris eu sem sapien.
         </p>
@@ -78,21 +78,407 @@
     <script>
 
         var map = L.map('map', {
-            center: [38.96,-85.36],
-            zoom: 8,
+            center: [38.26,-85.7],
+            zoom: 14,
         });
        
         var tiles = L.tileLayer('http://a{s}.acetate.geoiq.com/tiles/acetate-hillshading/{z}/{x}/{y}.png', {
             attribution: '&copy;2012 Esri & Stamen, Data from OSM and Natural Earth',
             subdomains: '0123',
             minZoom: 4,
-            maxZoom: 12
+            maxZoom: 20
         });
         map.addLayer(tiles);
         
         // Begin writing/modifying code for Task H here
+ var places =        {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Homeland",
+        "size": 200,
+        "description": "itty bitty living space"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.6904411315918,
+          38.2626477383348
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "big sis' place",
+        "size": 150,
+        "description": "she  moved away only to end up living closer"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.71520328521729,
+          38.25390302724748
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bluegrass Burgers",
+        "size": 150,
+        "description": "best bison burger you're gonna get in good 'ole KY"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.6708288192749,
+          38.25378507597411
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cresent hill Golf Course",
+        "description": "I know nothing about this place honestly, but it looks nice"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -85.67213773727417,
+              38.26404612052552
+            ],
+            [
+              -85.67490577697754,
+              38.263338508805376
+            ],
+            [
+              -85.67715883255005,
+              38.26315318078727
+            ],
+            [
+              -85.6840467453003,
+              38.26106399587805
+            ],
+            [
+              -85.68256616592407,
+              38.25914324061541
+            ],
+            [
+              -85.68039894104004,
+              38.25865461933275
+            ],
+            [
+              -85.68022727966309,
+              38.25897475088914
+            ],
+            [
+              -85.67765235900879,
+              38.25845243025457
+            ],
+            [
+              -85.67763090133667,
+              38.25916008956656
+            ],
+            [
+              -85.67593574523924,
+              38.26044059842022
+            ],
+            [
+              -85.67557096481323,
+              38.26194011299335
+            ],
+            [
+              -85.67537784576416,
+              38.262108595842676
+            ],
+            [
+              -85.67499160766602,
+              38.262108595842676
+            ],
+            [
+              -85.67428350448607,
+              38.26172108470504
+            ],
+            [
+              -85.67162275314331,
+              38.26332166082327
+            ],
+            [
+              -85.67213773727417,
+              38.26404612052552
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -85.6708288192749,
+            38.25380192616773
+          ],
+          [
+            -85.67091464996338,
+            38.25410522898501
+          ],
+          [
+            -85.67333936691284,
+            38.25424002983079
+          ],
+          [
+            -85.68022727966309,
+            38.25450963077216
+          ],
+          [
+            -85.69080591201782,
+            38.25476238074633
+          ],
+          [
+            -85.69183588027954,
+            38.254779230713346
+          ],
+          [
+            -85.69398164749146,
+            38.25450963077216
+          ],
+          [
+            -85.69795131683348,
+            38.253987278039816
+          ],
+          [
+            -85.70200681686401,
+            38.25349862208454
+          ],
+          [
+            -85.70312261581421,
+            38.25338067015475
+          ],
+          [
+            -85.70634126663208,
+            38.25365027428439
+          ],
+          [
+            -85.70958137512207,
+            38.25454333081953
+          ],
+          [
+            -85.7128643989563,
+            38.255571174755914
+          ],
+          [
+            -85.71430206298828,
+            38.25605981677435
+          ],
+          [
+            -85.71479558944702,
+            38.255251028203546
+          ],
+          [
+            -85.71552515029907,
+            38.25385247672518
+          ],
+          [
+            -85.71610450744629,
+            38.25380192616773
+          ],
+          [
+            -85.71683406829834,
+            38.25390302724748
+          ],
+          [
+            -85.71554660797119,
+            38.25637995976336
+          ],
+          [
+            -85.71535348892212,
+            38.256346260567796
+          ],
+          [
+            -85.71348667144775,
+            38.25968240511379
+          ],
+          [
+            -85.71262836456299,
+            38.25949706776877
+          ],
+          [
+            -85.71149110794067,
+            38.25948021889579
+          ],
+          [
+            -85.71024656295776,
+            38.259513916637864
+          ],
+          [
+            -85.70910930633545,
+            38.25963185861204
+          ],
+          [
+            -85.70799350738525,
+            38.25969925393991
+          ],
+          [
+            -85.70717811584471,
+            38.259648707449884
+          ],
+          [
+            -85.7062554359436,
+            38.25936227667544
+          ],
+          [
+            -85.70511817932129,
+            38.25900844886566
+          ],
+          [
+            -85.70380926132202,
+            38.258637770264386
+          ],
+          [
+            -85.70235013961792,
+            38.25840188289712
+          ],
+          [
+            -85.70106267929077,
+            38.258317637223236
+          ],
+          [
+            -85.70003271102905,
+            38.25845243025457
+          ],
+          [
+            -85.69743633270264,
+            38.25883995882678
+          ],
+          [
+            -85.6930375099182,
+            38.259513916637864
+          ],
+          [
+            -85.692458152771,
+            38.25961500977032
+          ],
+          [
+            -85.69365978240967,
+            38.26082811638795
+          ],
+          [
+            -85.69344520568848,
+            38.26092920769177
+          ],
+          [
+            -85.69295167922974,
+            38.26084496494835
+          ],
+          [
+            -85.6919002532959,
+            38.26087866205744
+          ],
+          [
+            -85.69084882736206,
+            38.26126617768859
+          ],
+          [
+            -85.6898832321167,
+            38.26156944934938
+          ],
+          [
+            -85.68926095962524,
+            38.26183902309618
+          ],
+          [
+            -85.69011926651001,
+            38.262883611916926
+          ],
+          [
+            -85.68919658660889,
+            38.261923264686914
+          ],
+          [
+            -85.6875228881836,
+            38.262681434607714
+          ],
+          [
+            -85.68625688552856,
+            38.26113138987741
+          ],
+          [
+            -85.68567752838135,
+            38.260524841632524
+          ],
+          [
+            -85.68400382995605,
+            38.26116508685363
+          ]
+        ]
+      }
+    }
+  ]
+}
+    //var placesLeaflet = L.geoJson(places, {
+       // pointToLayer : function(feature, latlng) {
+         //   console.log(feature,latlng);
+           // return L.circle(latlng, feature.properties.size);
+ //       }
+   // } ).addTo(map);
         
-
+        
+        var LouisvilleFeatures = L.geoJson(places, {
+        onEachFeature: function(feature, layer) {
+            //console.log(feature);
+            //console.log(layer);
+        }
+    }).addTo(map);
+        
+        var pointOptions = {
+        color: "#f7ff29"
+    }
+    var lineOptions = {
+        color: "rgb(253, 6, 129)"
+        
+    }
+    var polygonOptions = {
+        color: "#44ce7f",
+        colorOpacity: 1,
+        fillOpacity: .5
+    }
+    
+    
+    var LouisvilleFeatures = L.geoJson(places, {
+        pointToLayer : function(feature, latlng) {
+            return L.circle(latlng, feature.properties.size);
+        },
+        style : function(feature) {
+            return { dashArray: "5, 10",
+                     weight: 10
+                   }   
+        },
+        onEachFeature: function(feature, layer) {
+            if(feature.geometry.type == "Point") {
+                layer.setStyle(pointOptions);
+                layer.bindPopup("I am a "+feature.geometry.type+ " Feature!")
+            }
+            if(feature.geometry.type == "LineString") {
+                layer.setStyle(lineOptions);
+                layer.bindPopup("I am a "+feature.geometry.type+ " Feature!")
+            }   
+            if(feature.geometry.type == "Polygon") {
+                layer.setStyle(polygonOptions);
+                layer.bindPopup("I am a "+feature.geometry.type+ " Feature!")
+            }
+        
+        }
+    }).addTo(map);
+        //what am I missing? I understand the concepts with the .bindPopup, but I cannot get it to work. Do i need to define or call it somewhere separately? any help is appreciated.
           
     </script>
     
