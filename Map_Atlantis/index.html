@@ -169,63 +169,62 @@
             }
         ]; // end iguanaShips data
         
-        
-//      steps 3 here
-        
         var nopezone = {
-            color: 'rgba(255, 165, 0, 0.63)',
-            fillColor: 'orange'
-        };
-        var hideyokidshideyoflys = {
-            color: 'rgba(255, 0, 0, 0.67)',
-            fillColor: 'red'
-        };
-        
-        var iguanaships = L.layerGroup();
-        
-        for(var i = 0; i < iguanaZones.length; i++) {
-            var lzco = iguanaZones[i].coordinates; 
-            var props = iguanaZones[i].properties.size;
-            var iguananation = L.circle(lzco, props, nopezone);
-            iguananation.addTo(map);
-    iguanaships.addTo(map);
-    
-        };
+                    color: "orange",
+                    fillColor: "orange"
+};
 
-            
-        var marker;  // keep this code
-       
-        map.on('click', function(e) {  // keep this code
+        var hideyoflys = {
+                    color: 'red',
+                    fillColor: 'red'
+};
 
-          
-           if(map.hasLayer(marker)) {               
-               map.removeLayer(marker);
-            }
-            
-                var currentCoords = e.latlng;
-                marker = L.marker(currentCoords).addTo(map)
-            
-            
-            
-//              step eight here
-                //literally from this point on I thought i had it and turns out i didn't . At this point i sadly give up grade it as is and i will correct after the submission time. sorry :(  //
-            
-               testDistance(currentCoords);
-           
-                
-                
-        });  // keep this code
-        
-        function testDistance() {
-            
-            iguanaGroup.eachLayer(function(layer) {
-//              step 9 here
-//              step 10 here
-            });
-        }
-        
-// end map1 code
-        
+        var iguanaGroup = L.layerGroup();
+
+                for(var i=0; i<iguanaZones.length; i++) {
+
+                        var iguananation = L.circle(iguanaZones[i].coordinates,
+                                                    iguanaZones[i].properties.size,
+                                                    nopezone)
+                                                    .addTo(iguanaGroup);
+}
+
+                        iguanaGroup.addTo(map);
+
+        var marker;
+
+                map.on('click', function(e) {
+
+                        if(map.hasLayer(marker)) {
+
+                            map.removeLayer(marker);
+}
+
+                    var clickCoords = e.latlng;
+
+                        marker = L.marker(clickCoords).addTo(map);
+
+                        testDistance(clickCoords);
+});
+
+                function testDistance(testCoords) {
+
+                    iguanaGroup.eachLayer(function(layer) {
+
+                                var distance = testCoords.distanceTo(layer.getLatLng());
+
+                                        distance = distance - layer.getRadius();
+
+                                if(distance < 2200) {
+
+                                    layer.setStyle(hideyoflys);
+                                    } else {
+
+                                        layer.setStyle(nopezone);
+}
+});
+}
+
  </script>
     
 </body>
