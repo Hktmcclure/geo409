@@ -101,9 +101,11 @@
             },
             
             filter: function(feature, layer) {
+                // sneakily geojson uses a lon-lat order of coordinates, while leaflet by default expects lat-lon
+                var featureCoords = L.latLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
                 if(feature.properties.source["Natural Gas"] &&
                   feature.properties.source["Natural Gas"] < 500 && 
-                   Louisville.distanceTo(feature.geometry.coordinates) < 400);          
+                   Louisville.distanceTo(featureCoords)/1000 < 400) // distanceTo calculates in meters         
                // console.log(Louisville.distanceTo(feature.geometry.coordinates));
                    {
                     return feature;   
