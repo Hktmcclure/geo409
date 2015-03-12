@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>Geo409 Map 02</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        header {
+            padding: 6px 10%;
+        }
+        h1 {
+            display: inline-block;
+            margin-right: 20px;
+            color: #001323;
+        }
+        h2 {
+            display: inline-block;
+            color: #001323;
+        }
+        #map {
+            width: 80%;
+            height: 540px;
+            margin: 10px auto;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        p {
+            font-size: 1em;
+            color: #001323;
+        }
+        /* Additional style rules go here! */
+        
+    </style>
+</head>
+
+<body>
+    <header>
+       <h1>US Electric Power Generation</h1>
+        <h2>Power Production Through Various Means</h2> 
+    </header>
+
+       <div id='map'></div> 
+
+    <footer>
+       <p>This map brought to you by Hannah McClure</p> 
+        <br>
+        <p>This map displays three common power plant types in the United States; Coal, Natural Gas, and Nuclear Energy. Clicking once will enable a viewing of all those plants within 500km (~ 311mi) from the click point. Double clicking will display all those within 200km (~ 124mi). Controls located in the upper right corner of the map allow you to choose which power plants to display. Information relevant to each plant is displayed upon clicking directly on each individual plant when zoomed into the 500km or 200km focus.</p>
+    </footer>
+        
+        <script src="power-plants.js"></script>
+    
+    <script>
+        
+            var map = L.map('map', {
+            center: [36,-94],
+            zoom: 4,
+            doubleClickZoom: false,
+                                   });
+       
+          var tiles = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+                                  {
+	               attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a                           href="http://cartodb.com/attributions">CartoDB</a>',
+	               subdomains: 'abcd',
+              
+	               minZoom: 0,
+	               maxZoom: 18
+              
+                                  });
+        map.addLayer(tiles);
+        
+        
+        
+;
+        
+        var commonStyles = {
+             weight: 1,
+             stroke: 1,
+             fillOpacity: .8
+        }
+
+        var CoalLayer = L.geoJson(plants, {
+            pointToLayer: function(feature,latlng) {
+                return L.circleMarker(latlng, commonStyles);
+            },
+            filter: function(feature) {
+                if(feature.properties.fuel_source["Coal"]) {
+                    return feature;
+                }
+            },
+            style: function(feature) {
+                return {
+                    color: '#067778',
+                    fillColor: '#067778',
+                    radius: getRadius(feature.properties.fuel_source["Coal"])
+                } 
+            }
+            
+        }).addTo(map);
+
+        var NatGasLayer = L.geoJson(plants, {
+            pointToLayer: function(feature,latlng) {
+                return L.circleMarker(latlng, commonStyles);
+            },
+            filter: function(feature) {
+                if(feature.properties.fuel_source["Natural Gas"]) {
+                    return feature;
+                }
+            },
+            style: function(feature) {
+                return {
+                    color: 'orange',
+                    fillColor: 'orange',
+                    radius: getRadius(feature.properties.fuel_source["Natural Gas"])
+                }
+            }
+        }).addTo(map);
+        
+        
+         var NucLayer = L.geoJson(plants, {
+            pointToLayer: function(feature,latlng) {
+                return L.circleMarker(latlng, commonStyles);
+            },
+            filter: function(feature) {
+                if(feature.properties.fuel_source["Nuclear"]) {
+                    return feature;
+                }
+            },
+            style: function(feature) {
+                return {
+                    color: '#85edb6',
+                    fillColor: '#85edb6',
+                    radius: getRadius(feature.properties.fuel_source["Nuclear"])
+                }
+            }
+        }).addTo(map);
+        
+        
+        
+        
+        
+//        var spotlight;
+            
+      map.on('click', function(e) {
+          
+//          if(map.hasLayer(spotlight)) {
+//
+//map.removeLayer(spotlight);
+//}
+//           
+//          var spotlightOptions = {
+//color: '#ff001d',
+//fillColor: '#ff001d',
+//            radius: 500 
+//              
+//         
+//};
+//          
+//          var distance = e.latlng;
+//var setLatLng(distance);
+//            
+//          var spotlight = L.circle(distance, 
+//spotlightOptions).addTo(map);
+//(started to try the spotlight area but ran out of time to correct it)          
+          
+          
+          
+        CoalLayer.eachLayer(function(layer) {
+           
+            var distance = e.latlng.distanceTo(layer.getLatLng())/1000;
+
+            if(distance > 500) {
+                layer.setStyle({
+                    stroke: false,
+                    fill: false,        
+                }
+                );  
+            } else {
+               layer.setStyle({
+                    stroke: true,
+                    fill: true  
+               });  
+               layer.bindPopup("Hello I am <b>"+layer.feature.properties.plant_name.toLocaleString()+"</b><br>I use<b> Coal</b>.<br>I am <b>"+distance.toLocaleString()+ 
+                               "km</b><br> from your click point.");
+            }
+        }
+//            CoalLayer.eachLayer(function(feature){
+//            var name = feature.properties.plant_name;
+//        layer.bindPopup(}
+          );
+          
+          
+          NatGasLayer.eachLayer(function(layer) {
+            var distance = e.latlng.distanceTo(layer.getLatLng())/1000;
+              
+            if(distance > 500) {
+                layer.setStyle({
+                    stroke: false,
+                    fill: false
+                });  
+            } else {
+               layer.setStyle({
+                    stroke: true,
+                    fill: true  
+               });  
+               layer.bindPopup("Hello I am <b>"+layer.feature.properties.plant_name.toLocaleString()+"</b><br>I use<b> Natural Gas</b>.<br>I am <b>"+distance.toLocaleString()+ 
+                               "km</b><br> from your click point.");
+            } 
+        });
+          NucLayer.eachLayer(function(layer) {
+            var distance = e.latlng.distanceTo(layer.getLatLng())/1000;
+
+            if(distance > 500) {
+                layer.setStyle({
+                    stroke: false,
+                    fill: false
+                });  
+            } else {
+               layer.setStyle({
+                    stroke: true,
+                    fill: true  
+               });  
+               layer.bindPopup("Hello I am <b>"+layer.feature.properties.plant_name.toLocaleString()+"</b><br>I use<b> Nuclear</b> energy.<br>I am <b>"+distance.toLocaleString()+ 
+                               "km</b><br> from your click point.");
+            } 
+        });
+    });
+        
+        map.on('dblclick', function(e) {
+        CoalLayer.eachLayer(function(layer) {
+            var distance = e.latlng.distanceTo(layer.getLatLng())/1000;
+
+            if(distance > 200) {
+                layer.setStyle({
+                    stroke: false,
+                    fill: false
+                });  
+            } else {
+               layer.setStyle({
+                    stroke: true,
+                    fill: true  
+               });  
+               layer.bindPopup("Hello I am <b>"+layer.feature.properties.plant_name.toLocaleString()+"</b><br>I use<b> Coal</b>.<br>I am <b>"+distance.toLocaleString()+ 
+                               "km</b><br> from your click point.");
+            } 
+        });
+          NatGasLayer.eachLayer(function(layer) {
+            var distance = e.latlng.distanceTo(layer.getLatLng())/1000;
+
+            if(distance > 200) {
+                layer.setStyle({
+                    stroke: false,
+                    fill: false
+                });  
+            } else {
+               layer.setStyle({
+                    stroke: true,
+                    fill: true  
+               });  
+               layer.bindPopup("Hello I am <b>"+layer.feature.properties.plant_name.toLocaleString()+"</b><br>I use<b> Natural Gas</b>.<br>I am <b>"+distance.toLocaleString()+ 
+                               "km</b><br> from your click point.");
+            } 
+        });
+          NucLayer.eachLayer(function(layer) {
+            var distance = e.latlng.distanceTo(layer.getLatLng())/1000;
+
+            if(distance > 200) {
+                layer.setStyle({
+                    stroke: false,
+                    fill: false
+                });  
+            } else {
+               layer.setStyle({
+                    stroke: true,
+                    fill: true  
+               });  
+               layer.bindPopup("Hello I am <b>"+layer.feature.properties.plant_name.toLocaleString()+"</b><br>I use<b> Nuclear</b> energy.<br>I am <b>"+distance.toLocaleString()+ 
+                               "km</b><br> from your click point.");
+            } 
+        });
+    });
+        
+        
+        
+            var sourcesLayers = {
+        "<b style='color:#067778'>Coal</b>": CoalLayer,
+        "<b style='color:orange'>Natural Gas</b>": NatGasLayer,
+        "<b style='color:#85edb6;'>Nuclear</b>": NucLayer
+    }
+         L.control.layers(null, sourcesLayers, { collapsed:false }).addTo(map);
+        
+        
+            
+        function getRadius(val) {
+            var radius = Math.sqrt(val/Math.PI);
+            return radius * .3;   
+        }    
+        
+    </script>
+    
+</body>
+
+</html>
