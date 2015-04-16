@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Task Jellyfish</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+            <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+            <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+            <script src="simple_statistics.js"></script>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+<style>
+body {
+margin: 0;
+padding: 0;
+background: whitesmoke;
+font-family: Lato, sans-serif;
+color: #0D0000;
+}
+header {
+padding: 6px 10%;
+}
+h1 {
+display: inline-block;
+margin-right: 20px;
+color: #001323;
+}
+h2 {
+display: inline-block;
+color: #001323;
+}
+#map {
+width: 960px;
+height: 540px;
+margin: 10px auto;
+background: whitesmoke;
+border: 2px solid #dddedf;
+}
+footer {
+padding: 6px 10%;
+width: 80%;
+}
+p {
+font-size: 1em;
+color: #001323;
+}
+.legend {
+padding: 6px 8px;
+font-size: 1em;
+background: rgba(255,255,255,0.8);
+box-shadow: 0 0 15px rgba(0,0,0,0.2);
+border-radius: 5px;
+width: 160px;
+}
+.legend h3 {
+font-size: 1.1em;
+font-weight: bold;
+line-height: 1em;
+color: #001323;
+margin: 0;
+}
+.legend li {
+list-style-type: none;
+height: 22px;
+}
+.legend span {
+width: 30px;
+height: 20px;
+float: left;
+margin-right: 10px;
+}
+#ui-controls {
+width: 160px;
+}
+label {
+font-size: 1.1em;
+font-weight: bold;
+}
+.info {
+padding: 6px 8px;
+font-size: 1em;
+background: rgba(255,255,255,0.8);
+box-shadow: 0 0 15px rgba(0,0,0,0.2);
+border-radius: 5px;
+text-align: right;
+}
+.info h3 {
+margin: 0;
+}
+.leaflet-popup-content {
+max-width: 120px;
+}
+</style>
+</head>
+<body>
+<header>
+<h1>Task Jellyfish</h1>
+<h2>AdvGIS 4.02.15</h2>
+</header>
+<div id='ui-controls'>
+<label>Choose a data attribute:<br>
+<select name="vacant">
+    
+        
+        <option value="VACANT_FOR" selected>vacant units: for rent</option>
+        <option value="VACANT_REN" selected>vacant units: rented not occupied</option>
+        <option value="VACANT_FO2" selected>vacant units: for sale only</option>
+        <option value="VACANT_SOL" selected>vacant units: sole not occupied</option>
+        <option value="VACANT_SEA" selected>vacant units: used seasonally or for recreational use only</option>
+        <option value="VACANT_MIG" selected>vacant units: used for migratory workers</option>
+        <option value="VACANT_OTH" selected>vacant units: other</option>
+    
+</select>
+</label>
+</div>
+<div id='map'></div>
+<script>
+
+var options = {//initial map display and user setup - first look
+center: [38.2, -85.8],
+zoom: 7.4,
+minZoom: 7.4,
+maxZoom: 7.4,
+dragging: false,
+zoomControl: false
+}
+
+
+var map = L.map('map', options);//this is where the map is created
+var dataLayer,
+    attribute = "VACANT_FOR",//first attribute we consider - displayed on initial page
+    norm = "OCCUPIED";//second, normalizing attribute - displayed on initial page
+        var labels = { //labeling system employed on page
+
+            "VACANT_FOR": "vacant units: for rent",
+        "VACANT_REN": "vacant units: rented not occupied",
+        "VACANT_FO2": "vacant units: for sale only",
+        "VACANT_SOL": "vacant units: sole not occupied",
+        "VACANT_SEA": "vacant units: used seasonally or for recreational use only",
+        "VACANT_MIG": "vacant units: used for migratory workers",
+        "VACANT_OTH": "vacant units: other"
+}
+
+$.getJSON("ky_counties_housing.json", function(data) { //this calls the county information for Kentucky
+    dataLayer = L.geoJson(data, { //creates the map from leaflet and styles it simply
+        style: function(feature) {
+            return {
+                color: '#fff',
+                weight: 3,
+                fillOpacity: 2,
+                fillColor: '#1f78b4'
+};
+            
+}
+        
+}).addTo(map); //adds map to page
+    
+    ui(); // calls the ui system
+    
+    drawLegend();//draws the legend
+    
+    drawMap(); // draws the map
+    
+    drawInfo(); // draws the info dropdown
+});
+    
+function drawMap() {//now the fun begins with map drawing
+
+    var breaks = getClassBreaks(); //gets the class breaks for the information
+
+        dataLayer.eachLayer(function(layer) {
+                layer.setStyle({ //sets the style options
+                    fillColor: getColor(layer.feature.properties[attribute]/  
+                                        layer.feature.properties[norm], breaks)
+});
+
+            layer.bindPopup("<b>"+layer.feature.properties["NAME"]+" County</b></br>" +
+                            labels[attribute] + ": " + ((layer.feature.properties[attribute]/
+                                                         layer.feature.properties[norm])*100).toLocaleString()); //binds the information to popups 
+
+            layer.on('mouseover', function() { //when a user mousesover a county this creates an action
+                updateInfo(this);
+
+                layer.setStyle({color: 'orange'}).bringToFront();
+});//brings county to front and changes color to orange to highlight it for the user
+
+            layer.on('mouseout', function() {
+                layer.setStyle({color: '#dddddd'});//resets to original state on user mouseout
+});
+            
+});
+
+    dataLayer.on('mouseover', function() {
+        $(".info").show(); //displays county info on mouseover
+});
+
+    dataLayer.on('mouseout', function() {
+        $(".info").hide(); //resets to original state on user mouseout
+});
+
+    updateLegend(breaks);//sets new information
+}
+    
+function getClassBreaks() {
+
+    var values = [];
+
+            dataLayer.eachLayer(function(layer) {//begins a loop system
+                var value = layer.feature.properties[attribute]/layer.feature.properties[norm];
+                    values.push(value); 
+});
+    
+var breaks = ss.jenks(values, 5); //sets the breaks for data information
+    return breaks; 
+}
+    
+function getColor(d, breaks) {//determines what color is assigned to what data break
+if(d <= breaks[1]) {
+return '#f1eef6';
+} else if(d <= breaks[2]) {
+return '#bdc9e1';
+} else if(d <= breaks[3]) {
+return '#74a9cf';
+} else if(d <= breaks[4]) {
+return '#2b8cbe'
+} else if(d <= breaks[5]) {
+return '#045a8d'
+}
+    
+}
+    
+    function drawLegend() {//creates legend 
+        var legend = L.control({position: 'topleft'});//puts it in the topleft
+            legend.onAdd = function(map) {
+
+                var div = L.DomUtil.create('div', 'legend');
+                    return div;//returns the div
+};
+
+legend.addTo(map);//adds legend to the map
+}
+    
+function updateLegend(breaks) {//selects info and loops it through the breaks to decide where the information fits 
+    var legend = $('.legend').html("<h3>" + labels[attribute] + "</h3><ul>");
+    for (var i = 0; i < breaks.length-1; i++) {
+        var color = getColor(breaks[i + 1], breaks);
+            legend.append('<li><span style="background:' + color + '"></span> ' +
+                          (breaks[i]*100).toLocaleString() + ' &mdash; ' +
+                          (breaks[i + 1]*100).toLocaleString() + '</li>');
+}
+    
+legend.append("</ul>");
+    
+}
+    
+function ui() {//ui control system
+    var dataView = L.control({position: 'topleft'});
+        dataView.onAdd = function(map) {
+            var controls = L.DomUtil.get('ui-controls');
+            return controls;//returnes controls to system
+}
+
+dataView.addTo(map);//waits for user input from the dropdown and updates accrdingly
+    $('select[name="vacant"]').change(function() {
+        attribute = $(this).val();
+        drawMap();
+});
+    
+}
+    
+function drawInfo() {//new control object
+    var info = L.control({position: 'topright'});
+        info.onAdd = function(map) {
+            var div = L.DomUtil.create('div', 'info');
+                return div;//returns div
+}
+info.addTo(map);//adds div to map
+
+$(".info").hide();//hides info 
+}
+    
+function updateInfo(layer) {
+    var props = layer.feature.properties;
+        var html = "<h3>"+props['NAME']+" County</h3>"
+"# vacant units for rent: <b>"+ props["VACANT_FOR"]+"</b><br>"
+
++
+"# vacant units: rented not occupied: <b>"+ props["VACANT_REN"]+"</b><br>"
+
++
+"# vacant units: for sale only: <b>"+ props["VACANT_FO2"]+"</b><br>"
+
++
+"# vacant units: sole not occupied: <b>"+ props["VACANT_SOL"]+"</b><br>"
+
++
+"# vacant units: used seasonally or for recreational use only: <b>"+ props["VACANT_SEA"]+"</b><br>"
+
++
+"# vacant units: used for migratory workers: <b>"+ props["VACANT_MIG"]+"</b><br>"
+
++
+"# vacant units: other: <b>"+ props["VACANT_OTH"]+"</b><br>"
+
+//builds county information
+
+
+
+$(".info").html(html);
+}
+</script>
+</body>
+</html>
