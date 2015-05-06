@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>Map DavyJones</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.0/papaparse.min.js"></script>
+    <script src="simple_statistics.js"></script>
+    
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        header {
+            padding: 6px 10%;
+        }
+        h1 {
+        position: absolute;
+        z-index: 100;
+        top: 10px;
+        left: 60px;
+        padding: 8px 15px;
+        margin: 0;
+        color: whitesmoke;
+        font-size: 1.5em;
+        background: rgba(25,25,25,0.8);
+        border-radius: 5px; 
+    }
+        #map {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            bottom: 0;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        p {
+            font-size: 1em;
+            color: #001323;
+        }  
+          #map {
+        position: absolute;
+        width: 100%;
+        top: 0;
+        bottom: 0;
+    }
+          .legend {
+        padding: 6px 8px;
+        font-size: 1em;
+        background: rgba(75,75,75,0.8);
+        color: whitesmoke;
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        border-radius: 5px;
+        width: 100px;
+    }
+    .legend h3 {
+        font-size: 1.1em;
+        font-weight: bold;
+        line-height: 1em;
+        color: whitesmoke;
+        margin: 0;
+    }
+    .legend li {
+        list-style-type: none;
+        height: 25px;
+    }
+    .legend span {
+        width: 25px;
+        height: 20px;
+        float: left;
+        margin-right: 10px;
+    }
+    #ui-controls {
+        width: 176px;   
+        padding: 8px 15px 8px 15px;
+        background: rgba(75,75,75,0.8);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        border-radius: 5px; 
+        color: whitesmoke;
+    }
+    .year-slider {
+        width: 100%;
+    }
+         #ui-controls .min {
+        float: left;   
+    }
+    #ui-controls .max {
+        float: right;
+    }
+     .info {
+        padding: 6px 8px;
+        font-size: 1em;
+        background: rgba(75,75,75,0.8);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        border-radius: 5px;
+        text-align: right;   
+         color: whitesmoke;
+    }
+    </style>
+</head>
+
+<body>
+    <h1>Unemployment Rates in Kentucky : 2000-2013</h1>    
+    <div id="ui-controls">
+       
+    
+     <label><span class="min">2000</span><span class="max">2013</span>
+        <input type="range" min = "2001", max= "2013", 
+               value = "2001", step= "1", class="year-slider"></input>
+    </label>
+     </div>
+    <div id = 'ui-controls'>
+        
+        <label> Choose something: <br>
+        <select> name = "unemployment">
+                <option value="2001" selected>2001</option>
+                <option value="2002">2002</option>   
+                <option value="2003">2003</option>
+                <option value="2004">2004</option>
+                <option value="2005">2005</option>
+                <option value="2006">2006</option>
+                <option value="2007">2007</option>
+                <option value="2008">2008</option>   
+                <option value="2009">2009</option>
+                <option value="2010">2010</option>
+                <option value="2011">2011</option>
+                <option value="2012">2012</option>
+                <option value="2013">2013</option>
+        </select>
+        </label>
+    </div>    
+    <div id='map'></div>
+        
+    <script> //mpa options and basic control of first image and user abilities
+               var options = {
+            center: [38.2, -85.7],
+            zoom: 7,
+            minZoom: 4,
+            maxZoom: 9,
+            dragging: true,
+            zoomControl: true
+        }
+        var map = L.map('map', options); //creates the basic map
+      var tiles = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png', {
+	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',//takes already made map and applies it for aesthetic use here
+	subdomains: 'abcd',
+	minZoom: 1,
+	maxZoom: 12,
+	ext: 'png'
+        });
+      
+      map.addLayer(tiles); 
+        
+        
+        
+        var dataLayer, //declares the global variables
+            attribute =  2000
+        
+            
+        //AJAX to load county data
+        $.getJSON("ky-counties.json", function(states) {
+        Papa.parse('ky-unemployment-data.csv', { 
+            download: true,
+            header: true,
+            complete: function(data) {
+                // data is accessible to us here
+                //console.log(data);
+                // note that states is also accessible here!
+                //console.log(states);
+                
+                //allows data from csv file to be read and interpreted as information
+                
+                processData(states,data);
+                //calls arguments and passes information as such
+              
+                
+                dataLayer = L.geoJson(states, {//adds data layer to basemap
+                    style: function(feature) {//basic styling of layers
+                    return{
+                        color: 'black', 
+                        weight: 2,
+                        fillOpacity: 1,
+                        fillColor: 'whitesmoke'
+                    };
+                    }
+                }).addTo(map);
+                
+             
+                
+                drawLegend(); //calls the drawLegend function
+                
+                drawMap(); //calls the drawMap function
+                
+                drawInfo();
+               
+            }
+        }); // end of Papa.parse() 
+    });  // end of $.getJSON()
+        
+        
+        
+         $('select[name="unemployment"]').change(function() {
+             attribute = $(this).val();
+             drawMap();
+    })      
+        
+        $(".year-slider")
+        .on('input change', function() {
+            attribute = $(this).val();
+            drawMap();
+        });
+        //accesses the information for the slider as output
+    
+        
+       
+        
+                function processData(states, data){ //defines the boundaries(can't think of better word) for the information 
+                
+                for (var state in states.features) { //looping function sorts through properties quickly
+                        var props = states.features[state].properties;  
+                                                                
+                    for(var d in data.data) { //second loop to loop through csv data for each state
+                            if(props.COUNTY_FIP == data.data[d].CNTY) {
+                                states.features[state].properties = data.data[d]; 
+                                break;
+                 }  
+                                 
+            } 
+         } //looping is complete and information is cycled through
+                                
+     } //end of the data processing for the information
+               
+      
+
+            function drawMap() {
+            
+            var breaks = getClassBreaks(); //assigns variables from info to functions I hope
+              
+            dataLayer.eachLayer(function(layer) { 
+                
+                var props = layer.feature.properties;
+                      
+                layer.setStyle({
+                    fillColor: getColor(Number(props[attribute]), breaks)
+                });
+                
+                
+                    layer.bindPopup("<b>" + props["NAME"] + " County</b></br>" + attribute + ":  " +((props[attribute])).toLocaleString()) //creates a popup upon mouseover event that give name and current attribute
+                
+                        
+                    layer.on('mouseover', function() { //this is the mouseover event that calls the popup and information
+                    updateInfo(this); //updates based on user interaction
+                    
+                        
+                    layer.setStyle({color: '#00ffeb'}).bringToFront(); //changes county outline color depending on mouseover/out event
+                });
+                
+                        
+                    layer.on('mouseover', function() {
+                $(".info").show();
+                });
+                                                                //the popup box giveth (previous text) and it taketh away (following text)
+                        
+                    layer.on('mouseout', function() {
+                $(".info").hide();  
+                    
+                        
+                    layer.setStyle({color: 'black'});//bounding box back in black- song pun intended
+                });
+                
+          
+            });
+             
+            updateLegend(breaks);
+             
+        }
+        
+        
+        
+            function getClassBreaks() { //gives the breaks for the information
+                var values = []; 
+                dataLayer.eachLayer(function(layer) { //loop de loop of county information
+                    var value = layer.feature.properties[attribute];
+                    values.push(Number(value)); 
+                    
+                }); 
+                
+                var breaks = ss.quantile(values, [0,0.2,0.4,0.6,0.8,1]);//the breaks info falls into
+              
+                return breaks; //returns the breaks array
+            };   
+        
+             
+            
+            function getColor(d, breaks) {  //determines how to color the breaks and what color they will be
+                if(d <= breaks[1]) {
+                    return '#D0E4F2';
+                } else if(d <= breaks[2]) {
+                    return '#85A5CC';
+                } else if(d <= breaks[3]) {
+                    return '#4A6491';
+                } else if(d <= breaks[4]) {
+                    return '#30395C'
+                } else if(d <= breaks[5]) {
+                    return '#1A1F2B'
+                }
+               
+            }
+        
+          
+            
+            function drawLegend() { //draws legend
+                
+                
+                var legend = L.control({position: 'topright'});//postitions it
+                
+            
+                legend.onAdd = function(map) { //adds it to the map
+                
+                var div = L.DomUtil.create('div', 'legend'); 
+                return div; //returns div to the map
+            };
+            legend.addTo(map);//adds the legend to the map
+        }    
+
+         function updateLegend(breaks) { //updates the legend
+                
+            var legend = $('.legend').html("<h3>" + "Unemployment </br> in "+ attribute + "</h3><ul>"); 
+           
+            for (var i = 0; i < breaks.length-1; i++) { //loop de loop the breaks
+                
+                    
+                var color = getColor(breaks[i + 1], breaks);//gets colors for the breaks
+                legend.append('<li><span style="background:' + color + '"></span> ' +
+                              
+                    (breaks[i]).toLocaleString() + ' &mdash; ' + 
+                    (breaks[i + 1]).toLocaleString() + '</li>');
+            }
+            legend.append("</ul>"); 
+    }
+        
+    function drawInfo() { //makes boxy emptiness
+        
+        var info = L.control({position: 'bottomright'}); 
+        
+        
+        info.onAdd = function(map) { //add said emptiness to map
+            
+            var div = L.DomUtil.create('div','info');//gives div information
+            
+            return div; //returns it to the map
+        }
+        
+        info.addTo(map);
+    }
+ function updateInfo(layer) {
+        var props = layer.feature.properties;
+        
+        var html = "<h3>"+props['NAME']+" County</h3>"+ //labels the info
+                    "2000: <b>"+ props[2000]+"%</b><br>"+
+                    "2001: <b>"+ props[2001]+"%</b><br>"+
+                    "2002: <b>"+ props[2002]+"%</b><br>"+
+                    "2003: <b>"+ props[2003]+"%</b><br>"+
+                    "2004: <b>"+ props[2004]+"%</b><br>"+
+                    "2005: <b>"+ props[2005]+"%</b><br>"+
+                    "2006: <b>"+ props[2006]+"%</b><br>"+
+                    "2007: <b>"+ props[2007]+"%</b><br>"+
+                    "2008: <b>"+ props[2008]+"%</b><br>"+
+                    "2009: <b>"+ props[2009]+"%</b><br>"+
+                    "2010: <b>"+ props[2010]+"%</b><br>"+
+                    "2011: <b>"+ props[2011]+"%</b><br>"+
+                    "2012: <b>"+ props[2012]+"%</b><br>"+
+                    "2013: <b>"+ props[2013]+"%</b>"
+        $(".info").html(html);
+    }
+    var sliderControl = L.control({ position: 'bottomleft'} ); //makes the slider
+   
+    sliderControl.onAdd = function(map) {
+       
+        var slider = L.DomUtil.get("ui-controls");//sets control placement of the slider for user interaction
+            
+            L.DomEvent.addListener(slider, 'mousedown', function(e) { //prevents mayhem and confusion
+                    L.DomEvent.stopPropagation(e); 
+            });
+        
+        return slider; //mayhem has been avoided, this is the all clear
+    }
+    
+    sliderControl.addTo(map);
+    </script>
+    
+</body>
+
+</html>
