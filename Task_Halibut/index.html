@@ -431,13 +431,13 @@
  //       }
    // } ).addTo(map);
         
-        
-        var LouisvilleFeatures = L.geoJson(places, {
-        onEachFeature: function(feature, layer) {
-            //console.log(feature);
-            //console.log(layer);
-        }
-    }).addTo(map);
+// We don't want to place features here with their general styling (marker symbol) as we'll be more specific anyways starting on l456        
+//        var LouisvilleFeatures = L.geoJson(places, {
+//        onEachFeature: function(feature, layer) {
+//            //console.log(feature);
+//            //console.log(layer);
+//        }
+//    }).addTo(map);
         
         var pointOptions = {
         color: "#f7ff29"
@@ -465,15 +465,18 @@
         onEachFeature: function(feature, layer) {
             if(feature.geometry.type == "Point") {
                 layer.setStyle(pointOptions);
-                layer.bindPopup("I am a "+feature.geometry.type+ " Feature!")
+                //layer.bindPopup("I am a "+feature.geometry.type+ " Feature!")
+                layer.bindPopup("<b>" + feature.properties.name + "</b><br>" + feature.properties.description)
             }
             if(feature.geometry.type == "LineString") {
                 layer.setStyle(lineOptions);
-                layer.bindPopup("I am a "+feature.geometry.type+ " Feature!")
+                //layer.bindPopup("I am a "+feature.geometry.type+ " Feature!")
+                layer.bindPopup("<b>" + feature.properties.name + "</b><br>" + feature.properties.description)
             }   
             if(feature.geometry.type == "Polygon") {
                 layer.setStyle(polygonOptions);
-                layer.bindPopup("I am a "+feature.geometry.type+ " Feature!")
+                //layer.bindPopup("I am a "+feature.geometry.type+ " Feature!")
+                layer.bindPopup("<b>" + feature.properties.name + "</b><br>" + feature.properties.description)
             }
         
         }
